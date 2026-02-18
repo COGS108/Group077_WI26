@@ -1,6 +1,6 @@
-Data overview
+# Data overview
 
-We use multiple country-level datasets that can be aligned by country name (and standardized to ISO-3 codes) to estimate caffeine exposure and compare it to health and social outcomes.
+### We use multiple country-level datasets that can be aligned by country name (and standardized to ISO-3 codes) to estimate caffeine exposure and compare it to health and social outcomes.
 
 Dataset 1 — Coffee consumption per capita (country-level)
 
