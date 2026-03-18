@@ -40,9 +40,13 @@ Coffee-dominant versus tea-dominant countries also differed on outcomes, but aga
 
 [SLIDE: Analysis — Regression Results]
 ANCHIT or JOHN:
-[Update this section once regression is complete. Draft placeholder below:]
-Moving to the regression. We ran OLS models on the country-year panel with depression and mortality as outcomes, controlling for GDP per capita, smoking, and alcohol. We also ran cross-sectional regressions on the most recent year.
-[Fill in: what happened to the caffeine coefficient after adding controls? Did it shrink? Stay significant? Flip sign? Report coefficient, standard error, and p-value. If you ran sensitivity analyses varying the caffeine conversion factors, report those here.]
+Moving to the regression. We ran three OLS models on the 2020 cross-section — 124 countries with complete data — for both depression and mortality as outcomes. All predictors were z-scored so coefficients are directly comparable.
+
+For mortality, the results tell a clear story of confounding. In the unadjusted model, a one-standard-deviation increase in estimated caffeine is associated with roughly a 99-unit decrease in mortality per 100,000 — that's highly significant, p equals 0.0009. But when we add log GDP per capita in Model 2, the caffeine coefficient drops by 62.5 percent to about minus 37, and p rises to 0.041. GDP alone explains most of the variance — the model R-squared jumps from 0.09 to 0.67. In the fully adjusted model, adding smoking and alcohol, caffeine attenuates further to minus 34.8, with p at 0.057 — just outside the conventional 0.05 threshold. So the raw association is mostly a GDP effect, but a small residual signal may remain.
+
+For depression, the caffeine coefficient was non-significant in every model — B around minus 0.001, p always above 0.1 — and the models explain almost none of the cross-country variance in depression prevalence. So we found no meaningful caffeine-depression association at the ecological level.
+
+On multicollinearity, all VIFs were below 1.5, so our predictors aren't redundant. The sensitivity analysis, varying caffeine conversion factors by plus or minus 25 percent, showed perfectly stable coefficients because z-scoring absorbs linear rescaling. Our conclusions don't depend on the exact caffeine content assumptions.
 
 [SLIDE: Limitations]
 JOHN:
@@ -60,8 +64,8 @@ Finally, we're aware that findings like these can be picked up and misused by th
 
 [SLIDE: Conclusions]
 ALI:
-So what did we find? At the country level, there is a detectable negative association between estimated caffeine intake and all-cause mortality. That association is consistent across years. After controlling for GDP and lifestyle factors in regression, [fill in your finding: did the association persist, attenuate, or disappear?].
-The depression association is weaker and less robust. The caffeine source comparison, coffee versus tea, is suggestive but confounded by geography and wealth.
+So what did we find? At the country level, there is a detectable negative association between estimated caffeine intake and all-cause mortality. That association is consistent across years. After controlling for GDP and lifestyle factors in regression, the caffeine coefficient attenuated by nearly 65 percent and fell just outside conventional significance at p equals 0.057. GDP per capita was by far the dominant predictor. So the raw caffeine-mortality association is largely — but not entirely — a wealth effect. A small residual signal may persist, but our data can't confirm that.
+The caffeine-depression association was non-significant in every model we ran. The caffeine source comparison, coffee versus tea, is suggestive but confounded by geography and wealth.
 The big-picture lesson from this project is that cross-country ecological analyses are useful for generating hypotheses but genuinely limited for establishing mechanisms. The patterns we found are consistent with prior individual-level findings, but we can't say much more than that without longitudinal data at the individual level and better caffeine exposure measurement.
 If this work were to continue, the natural next step would be incorporating energy drink market share data, which we couldn't get at the right resolution, and running country fixed-effects panel models to better account for stable national characteristics.
 Thanks for watching.
