@@ -8,7 +8,7 @@ Our primary question is: across countries, is higher estimated caffeine consumpt
 This is an inference project, not a prediction one. We're not building a model to classify countries. We're testing whether a relationship exists and how robust it is.
 
 [SLIDE: Data Overview]
-BRANDON or CESAR:
+BRANDON:
 We pulled together seven datasets. For caffeine exposure, we used per-capita coffee and tea consumption figures from World Population Review, 2023 and 2022 respectively. We converted those to a derived variable, estimated daily caffeine in milligrams per person per day, using caffeine-content conversion factors from a Kaggle reference dataset.
 For outcomes, we used IHME GBD data for depression prevalence and all-cause mortality. For confounders, we used Our World in Data for GDP per capita, smoking prevalence, and alcohol consumption. All of these were merged into a country-year panel.
 One important caveat up front: the caffeine exposure variable is a cross-sectional estimate applied to a multi-year panel. We're assuming consumption patterns are relatively stable over time, which is a simplification.
