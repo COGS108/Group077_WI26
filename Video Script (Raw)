@@ -1,69 +1,63 @@
 ALI:
-Hi, we're a COGS 108 team from UCSD. Our project asks whether country-level caffeine consumption is associated with national mental health and mortality outcomes. I'm Ali, and I'll start with the motivation and question.
+Hi, we're a COGS 108 team at UCSD. Our project asks whether country-level caffeine consumption is associated with national health outcomes — specifically depression and all-cause mortality — after accounting for economic and lifestyle confounders. I'm Ali, and I'll walk through the motivation and setup.
 
 [SLIDE: Research Question]
 ALI:
-Caffeine is one of the most widely consumed psychoactive substances on the planet. Prior individual-level research has found links between caffeine intake and depression and mortality, but almost all of that work is within a single country. We wanted to ask a different question: do these patterns appear across countries? And if they do, can we separate caffeine from the obvious confounders like wealth, smoking, and alcohol?
-Our primary question is: across countries, is higher estimated caffeine consumption per capita associated with lower depression burden or lower all-cause mortality? Our secondary questions ask whether the dominant caffeine source matters, specifically coffee versus tea, and whether any association survives controlling for GDP and lifestyle factors.
-This is an inference project, not a prediction one. We're not building a model to classify countries. We're testing whether a relationship exists and how robust it is.
+Caffeine is one of the most widely consumed psychoactive substances on the planet. Most of the research linking caffeine to health outcomes operates at the individual level and within a single country. We wanted to ask a different question: do those patterns hold when you look across countries? And if you see a correlation, is it actually about caffeine, or is it just tracking wealth?
+Our primary question is: across countries, is higher estimated caffeine intake associated with differences in depression burden or all-cause mortality? We also asked whether the dominant caffeine source matters — coffee versus tea — and whether any association survives controlling for GDP, smoking, and alcohol use.
+This is an inference project. We're testing whether a relationship exists and quantifying how much of it survives confounder adjustment, not building a predictive model.
 
-[SLIDE: Data Overview]
+[SLIDE: Data + Methods]
 BRANDON:
-We pulled together seven datasets. For caffeine exposure, we used per-capita coffee and tea consumption figures from World Population Review, 2023 and 2022 respectively. We converted those to a derived variable, estimated daily caffeine in milligrams per person per day, using caffeine-content conversion factors from a Kaggle reference dataset.
-For outcomes, we used IHME GBD data for depression prevalence and all-cause mortality. For confounders, we used Our World in Data for GDP per capita, smoking prevalence, and alcohol consumption. All of these were merged into a country-year panel.
-One important caveat up front: the caffeine exposure variable is a cross-sectional estimate applied to a multi-year panel. We're assuming consumption patterns are relatively stable over time, which is a simplification.
+We built the dataset from seven sources. For caffeine exposure, we used per-capita coffee and tea consumption from World Population Review — 2023 for coffee, 2022 for tea — and converted those to an estimated daily caffeine intake in milligrams per person per day using standard caffeine-content conversion factors. From there, we labeled each country as coffee-dominant or tea-dominant based on which beverage contributed more by weight.
+For outcomes, we used IHME GBD data for depression prevalence and all-cause mortality. For confounders, we pulled GDP per capita, smoking prevalence, and alcohol consumption from Our World in Data. All of this was merged into a country-year panel.
+One upfront caveat: the caffeine exposure variable is a cross-sectional estimate applied to a multi-year panel. We're assuming national consumption patterns are relatively stable over time, which is a simplification.
 
-[SLIDE: Data Wrangling]
-BRANDON:
-The wrangling involved scraping HTML tables for the beverage data, auto-detecting OWID versus IHME file formats, standardizing country names across sources, and filtering out regional aggregates that appear in GBD exports. We saved two processed files: a full panel and a most-recent-year cross-section. Both are reproducible from our code in the Data Checkpoint notebook.
-
-[SLIDE: EDA — Temporal Coverage]
+[SLIDE: EDA — Trends and Distributions]
 ANCHIT:
-Before looking at associations, we checked data coverage. Depression and mortality have strong coverage back to the 1990s. Smoking and alcohol data are narrower. The best joint coverage window across all variables falls in the mid-2000s to around 2019.
-When we stratified outcome trends by caffeine tercile, countries in the highest estimated caffeine group showed consistently lower all-cause mortality across the panel. But here's the immediate problem with that: high-caffeine countries tend to be wealthier European countries. So we can't tell yet whether we're seeing a caffeine signal or a GDP signal. That's exactly what the regression needs to sort out.
-
-[SLIDE: EDA — Distributions]
-ANCHIT:
-Both coffee and tea consumption are right-skewed. A handful of countries, mostly in Northern Europe, consume far more than the global median. The estimated caffeine variable inherits that skewness, so we used medians and IQR rather than means throughout the EDA.
-The violin plots for outcomes show that all-cause mortality distributions have shifted leftward over the panel, meaning countries generally improved. Depression prevalence distributions stayed relatively stable.
-
-[SLIDE: EDA — Bivariate Associations]
-CESAR:
-In the most recent cross-section, there is a negative correlation between estimated caffeine intake and all-cause mortality. Higher caffeine countries tend to have lower mortality rates. The Spearman correlation is statistically significant. The correlation with depression is weaker and less consistent.
-The correlation-over-time analysis shows the caffeine-mortality association appears across most years in the panel, not just in the most recent snapshot. That's at least consistent with a real structural pattern rather than noise. But the critical caveat from Section 4 of our EDA is that GDP correlates strongly with both caffeine intake and mortality, making it the obvious alternative explanation.
+Before the regression, the EDA gave us two important things: a picture of the raw associations, and a clear view of the confounding structure.
+On distributions: both coffee and tea consumption are right-skewed. A handful of Northern European countries consume far more than the global median, and the estimated caffeine variable inherits that skewness. We used medians and IQR throughout rather than means.
+On trends: when we stratified outcome trends over time by caffeine tercile, countries in the highest caffeine group showed consistently lower all-cause mortality across the full panel. But immediately, the problem is obvious — these countries are also wealthier, and their better outcomes likely reflect healthcare systems and economic stability at least as much as caffeine.
 
 [SLIDE: EDA — Confounder Structure]
 CESAR:
-The Spearman correlation heatmap makes the confounding structure visible. GDP per capita correlates strongly with caffeine intake and negatively with mortality. That's a classic confounder setup: the variable we care about is tangled up with a structural economic variable.
-When we stratified the caffeine-depression scatter by GDP tercile, the association looked weaker or inconsistent within each tercile compared to the overall pattern. That suggests GDP is explaining a meaningful chunk of what initially looks like a caffeine effect.
-Coffee-dominant versus tea-dominant countries also differed on outcomes, but again, these groupings track geography and wealth as much as caffeine source, so we can't read much into that without regression controls.
+The Spearman correlation heatmap makes the confounding structure explicit. GDP per capita correlates strongly with both caffeine intake and mortality. When we stratified the caffeine-mortality scatter by GDP tercile, the within-stratum association was visibly weaker than the overall pattern.
+The caffeine-depression association was already weak in the EDA — less consistent across years, lower correlation coefficients, and it didn't survive the GDP stratification cleanly. That preview turned out to predict the regression results pretty well.
 
-[SLIDE: Analysis — Regression Results]
-ANCHIT or JOHN:
-[Update this section once regression is complete. Draft placeholder below:]
-Moving to the regression. We ran OLS models on the country-year panel with depression and mortality as outcomes, controlling for GDP per capita, smoking, and alcohol. We also ran cross-sectional regressions on the most recent year.
-[Fill in: what happened to the caffeine coefficient after adding controls? Did it shrink? Stay significant? Flip sign? Report coefficient, standard error, and p-value. If you ran sensitivity analyses varying the caffeine conversion factors, report those here.]
+[SLIDE: Regression — Mortality]
+ANCHIT:
+We ran three OLS model specifications for each outcome — unadjusted, GDP-adjusted, and fully adjusted — on the most recent cross-section of 124 countries.
+For mortality, the unadjusted model showed a strong negative association: a one-standard-deviation increase in estimated caffeine was associated with about 99 fewer deaths per 100,000, and that was highly significant with a p-value of 0.0009. But the model R-squared was only 0.087, meaning caffeine alone explains less than 9% of the cross-country variation in mortality.
+Once we added log GDP per capita in Model 2, that caffeine coefficient dropped by 62.5% — from negative 99 down to negative 37 — and the model R-squared jumped to 0.608. GDP is doing almost all of the explanatory work. In the fully adjusted model adding smoking and alcohol, the caffeine coefficient barely moved, landing at negative 34.8 with a p-value of 0.057. The model R-squared reached 0.678. So caffeine falls just outside conventional significance after full adjustment, and GDP remains the dominant predictor by a wide margin — its coefficient is over seven times larger than caffeine's.
+
+[SLIDE: Regression — Depression]
+CESAR:
+For depression, the story is simple: caffeine was non-significant across all three model specifications. The coefficient was approximately negative 0.001 with p-values above 0.1 in every model. The overall model fit was very low — R-squared between 0.015 and 0.052 — meaning our full set of predictors explains essentially nothing about cross-country variation in depression prevalence.
+This is consistent with what the EDA showed. The caffeine-depression correlation was weak and inconsistent across years from the start.
+
+[SLIDE: Diagnostics + Sensitivity]
+JOHN:
+On the model quality side: all variance inflation factors were below 1.5, so there are no multicollinearity concerns. The residual diagnostics for the mortality model show reasonably well-behaved residuals with no severe heteroscedasticity. The Q-Q plot shows mild tail departures, likely driven by a handful of high-mortality outlier countries. The depression residuals are similarly clean.
+For sensitivity: we varied the caffeine conversion factors by plus and minus 25% and re-ran the fully adjusted model under each scenario. The coefficients were perfectly stable. This is actually expected — because we z-score the predictor before regression, a uniform linear rescaling of the caffeine values doesn't change the standardized coefficient. What this tells us is that our conclusions don't depend on the specific caffeine-per-kilogram conversion number we chose. They do still depend on whether the relative ranking of countries by caffeine intake is approximately right.
 
 [SLIDE: Limitations]
-JOHN:
-A few limitations worth naming directly.
-First, ecological fallacy. We're analyzing country-level aggregates. Even if we find an association, it tells us nothing about what happens to an individual who drinks more coffee. Those are entirely different questions.
-Second, our caffeine exposure variable is approximate. Caffeine content varies substantially by preparation method and product type, and we're using a fixed conversion factor. We tried to account for this with sensitivity analyses, but the uncertainty is real.
-Third, the coffee and tea consumption inputs are recent cross-sections applied across all years of the panel. That's a simplifying assumption that we couldn't avoid given data availability.
-Fourth, depression and mortality data from IHME GBD are model-based estimates, not direct surveillance counts, and they tend to be less reliable for lower-income countries with weaker health systems. That could bias results toward patterns observed in wealthier, better-studied nations.
+ALI:
+A few things to be explicit about.
+First, ecological fallacy. We're analyzing country-level aggregates. Even if we found a significant caffeine-mortality association after full adjustment, that would tell us nothing about what happens to an individual who drinks more coffee. Those are different questions and our design can't answer the individual-level one.
+Second, our caffeine exposure is approximate. Caffeine per gram varies substantially by preparation method, roast, and product. We used fixed conversion factors applied uniformly across all countries, which is a real limitation.
+Third, our coffee and tea inputs are single cross-sections applied to a multi-year panel. We're using 2022 and 2023 consumption figures to explain health outcomes in earlier years. That temporal mismatch matters.
+Fourth, IHME GBD estimates are model-derived and less reliable for lower-income countries — which are also the lower-caffeine countries. This asymmetry could artificially strengthen our observed associations.
 
 [SLIDE: Ethics]
 ALI:
-A few ethical points. We want to be explicit that ecological correlations cannot be used to make causal claims about individuals. This study cannot tell you whether drinking coffee is good for you.
-Caffeine consumption is also deeply tied to culture, from tea ceremonies in East Asia to coffee culture in Scandinavia to traditional qahwa in the Middle East and Turkey. Any framing that implies one pattern is healthier than another risks being culturally reductive.
-Finally, we're aware that findings like these can be picked up and misused by the beverage industry. We've been careful to frame everything as observational and ecological throughout.
+A few ethical notes. Caffeine consumption is deeply tied to culture — tea ceremonies in East Asia, coffee culture in Scandinavia, qahwa in the Middle East and Turkey. Framing any observed pattern as better or worse based on caffeine source or quantity would be culturally reductive. We've been careful to frame this as describing co-variation, not making prescriptions.
+There's also a misuse risk. Ecological findings like these can be selectively cited by the beverage industry. We want to be clear: this is observational, country-level data. No causal claims are warranted.
 
 [SLIDE: Conclusions]
 ALI:
-So what did we find? At the country level, there is a detectable negative association between estimated caffeine intake and all-cause mortality. That association is consistent across years. After controlling for GDP and lifestyle factors in regression, [fill in your finding: did the association persist, attenuate, or disappear?].
-The depression association is weaker and less robust. The caffeine source comparison, coffee versus tea, is suggestive but confounded by geography and wealth.
-The big-picture lesson from this project is that cross-country ecological analyses are useful for generating hypotheses but genuinely limited for establishing mechanisms. The patterns we found are consistent with prior individual-level findings, but we can't say much more than that without longitudinal data at the individual level and better caffeine exposure measurement.
-If this work were to continue, the natural next step would be incorporating energy drink market share data, which we couldn't get at the right resolution, and running country fixed-effects panel models to better account for stable national characteristics.
+So what did we find?
+Country-level caffeine consumption shows a negative association with all-cause mortality that is largely — but not entirely — explained by economic development. After fully adjusting for GDP, smoking, and alcohol, the caffeine-mortality coefficient attenuated by about 65% and landed at a p-value of 0.057. GDP is clearly the dominant driver. Whether the residual caffeine signal is real or reflects unmeasured confounding is something this design can't resolve.
+For depression: caffeine is not meaningfully associated with cross-country variation in depression prevalence. Our predictors collectively explained almost nothing there, which suggests depression is driven by factors our dataset doesn't capture well.
+The sensitivity analysis was reassuring — results don't depend on our specific conversion factor assumptions. And the broader finding lines up in direction with prior individual-level literature, even if our ecological design can't tell us why.
+If this work continued, the natural next steps would be year-matched beverage consumption data, country fixed-effects models, and adding energy drink market share, which we couldn't get at the resolution we needed.
 Thanks for watching.
-
-[END SLIDE: Team credits, links to notebooks]
