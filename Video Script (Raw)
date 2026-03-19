@@ -6,7 +6,7 @@ ALI:
 Prior research has linked caffeine to depression and mortality at the individual level, but almost all of it is within one country. We wanted to test whether those patterns hold across countries, and whether they survive controlling for confounders like GDP, smoking, and alcohol. This is an inference project — we're testing whether a relationship exists and how robust it is.
 
 [SLIDE: Data Overview]
-BRANDON or CESAR:
+BRANDON:
 We merged seven datasets into a country-year panel. Coffee and tea consumption from World Population Review were converted into estimated daily caffeine per capita. For outcomes, we used IHME GBD data on depression and all-cause mortality. For confounders: GDP per capita, smoking, and alcohol from Our World in Data. One caveat — our caffeine variable is a cross-sectional estimate applied across multiple years.
 
 [SLIDE: Data Wrangling]
